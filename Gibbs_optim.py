@@ -2,7 +2,7 @@
 """
 Created on Sat Apr 20 09:42:28 2019
 
-@author: cht15
+@author: Mattek8b
 """
 
 import numpy as np
@@ -14,24 +14,22 @@ from object_module import objects
 from modes_module import modes
 
 # =============================================================================
-# Class elements
+# Class Elements
 # =============================================================================
-
-
 class Sampling(spatial_geometry, modes, objects):
     """
     Creates a room and discretise it to final point latice (simplex).
-    Then init P microphones in the room by uniformly distribution.
+    Then init q microphones in the room by uniformly distribution.
 
     As the locations of interest are restricted to locations where a microphone
-    is located. As such a itteration over each point is performed.
-    (For itterative condition mode each microphone is moved to the point
+    is located. As such a iteration over each point is performed.
+    (For iterative condition mode each microphone is moved to the point
     in its neighbourhood which leads to the maximum)
-    (For Gibbs two random points are taking into consideration (0 and 1)
+    (For Gibbs sampling two random points are taking into consideration (0 and 1)
     is only moved if it reduces the energy (not just the max)).
 
     The room is only indexed by values where a microphone is allowed.
-    As such any considerations of walls an objects can be discarded.
+    As such any considerations of walls objects can be discarded.
 
     0 is empty, 1 is microphone, 2 is speaker, 3 is modes, 4 is active subject,
     5 is testsubject.
@@ -52,7 +50,7 @@ class Sampling(spatial_geometry, modes, objects):
                  modes=True, **kwargs):
         """
         Given the parameters sets up the room as an array.
-            Restriced to a square room (as a start).
+        Restriced to a square room (as a start).
 
         Parameters
         ----------
@@ -60,18 +58,18 @@ class Sampling(spatial_geometry, modes, objects):
             x,y,(z) coordinates of a rooms corners.
         s_location : array_like
             x,y,(z) coordinates for the location of speakers in the room
-            (Optional default off)
+            (optional default off)
         i_range : float
             Interaction range of speaker to block out of the room.
         res : float
             Resolution of the room (default: 0.05). This corresponds to a
             spacing between the each point in the array of 5 cm.
         n_mics : int
-            The minimum number of microphone needed in the system. (default: 6)
+            The minimum number of microphone needed in the system (default: 6).
         Reduced : Boolean
-            True false parameter changing whether the room measurements (Wall
+            True/False parameter changing whether the room measurements (wall
             lengths and objects) are with or without considering microphone
-            restrictions. (default: False)
+            restrictions (default: False).
             (i.e. default is regular room measurements)
         restricted : float
             The minimum length a microphone needs to be placed from a wall.
@@ -79,8 +77,7 @@ class Sampling(spatial_geometry, modes, objects):
             The max and min frequency for octave range used to calculate the
             nodel planes.
         c : float
-            Speed of sound in meters per second
-                (default 343 speed of sound at 20C)
+            Speed of sound in meters per second (default 343 speed of sound at 20C).
         table : dict
             Whether the system should place a box shaped object or not.
             The dict should contain two elements (x,y,z) coordinates of the
@@ -213,16 +210,16 @@ class Sampling(spatial_geometry, modes, objects):
 
     def _H(self, subroom, i_range=2, beta=1, test=False, ):
         """
-        Energyfunction for the model
+        Energy function for the model
 
         Parameters
         ----------
-        Subroom : array_like
+        subroom : array_like
             Hypothical subset of the room.
         i_range : float
-            Interaction range of speakers (default 2)
+            Interaction range of speakers (default 2).
         beta : float
-            Scalar value for the energi function (default 1)
+            Scalar value for the energi function (default 1).
         test : boolean
             Whether the system should be looking for active subject or test
             subject. (Slightly reduces computational cost.)
@@ -230,7 +227,7 @@ class Sampling(spatial_geometry, modes, objects):
         Returns
         -------
         Energy : float
-            The energy of the subroom
+            The energy of the subroom.
         """
 
         if test is False:
@@ -271,7 +268,7 @@ class Sampling(spatial_geometry, modes, objects):
     def Sampler(self, max_iter, i_r, annealing=False, v=False,
                 i_range=2, **kwargs):
         """
-        Gibbs sampling of the Gibbs random field - Iterating over all
+        Gibbs sampling of the Gibbs random field -- iterating over all
         microphone locations picking a neighbour and checking whether the
         microphone should mode to the location by calculating the energy H(X).
 
@@ -373,7 +370,7 @@ class Sampling(spatial_geometry, modes, objects):
         self.room_array : array_like
             The room defined as an array for updating and placing microphones.
         i_r : float
-            Interaction Range - The range for which the neighbourhood is
+            Interaction Range -- the range for which the neighbourhood is
             defined around S.
             Minimum length for speakers should be (343/89)/2)
         v : boolean
@@ -414,7 +411,7 @@ class Sampling(spatial_geometry, modes, objects):
 
     def Condition_check(self, i_range=2):
         """
-        Checks whether the system fullfills the ISO 3382-2 standard.
+        Checks whether the system fullfills the ISO 3382-2:2008 standard.
 
         Parameters
         ----------
@@ -426,7 +423,7 @@ class Sampling(spatial_geometry, modes, objects):
         Returns
         -------
         Check : boolean
-            Does the system adhere to ISO 3382-2
+            Does the system adhere to ISO 3382-2:2008
         Unfulfilled : array_like
             Boolean array indicating the microphones which position does adhere
             to the standard.
@@ -470,7 +467,7 @@ class Sampling(spatial_geometry, modes, objects):
         self : class element
             Call able with out other parameters.
         Color : str
-            The matplotlib color used for the scatter dots. (Default 'C2')
+            The matplotlib color used for the scatter dots (default 'C2').
         """
         self._plot_2D_wall()
         mic = (np.argwhere(self._plot_save_array == 1) + 1) * self.res
